@@ -1,0 +1,25 @@
+.error-container {
+  text-align: center;
+
+  .error-code {
+    font-size: 72px;
+    font-weight: bold;
+    color: #d9534f;
+    margin-bottom: 20px;
+  }
+
+  .error-message {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .back-link {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

@@ -1,0 +1,122 @@
+.user-details-container {
+  align-items: center;
+  min-height: 100vh;
+  height: 100%;
+
+  .user-details-wrapper {
+    max-width: 550px;
+    gap: 65px;
+    width: 90%;
+    justify-content: center;
+    padding: 40px 0;
+
+    .details-wrapper {
+      gap: 30px;
+
+      .avatar-container {
+        max-width: 102px;
+        width: 100%;
+        height: 102px;
+        border-radius: 50%;
+        background-color: #f0f0f0;
+        border: 1px solid #fd5f27;
+        box-shadow: 0 6px 12px rgba(253, 95, 39, 0.4);
+
+        i {
+          font-size: 36px;
+        }
+      }
+
+      .details {
+        p:last-child {
+          color: #adadad;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .form-wrapper {
+
+      form {
+        gap: 30px;
+
+        .input-row {
+          gap: 32px;
+          justify-content: space-between;
+
+          .input-box {
+
+            label {
+              max-width: 255px;
+              width: 100%;
+            }
+
+            input {
+              width: 255px;
+              padding: 10px;
+              border-radius: 10px;
+              border: 1px solid #f0f0f0;
+              background: #fbfbfb;
+              outline: none;
+              transition: box-shadow 0.5s;
+
+              &.is-invalid {
+                border-color: #dc3545;
+                background-color: rgba(220, 53, 69, 0.1);
+                color: #dc3545;
+              }
+
+              &:not([readonly]):focus {
+                background: #fff;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+              }
+
+              &.disabled {
+                cursor: not-allowed;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .save-button-wrapper {
+      button {
+        background: #fd5f27;
+        border-radius: 16px;
+        box-shadow: 0 6px 12px rgba(253, 95, 39, 0.4);
+        border: 0;
+        color: #fff;
+        width: 100%;
+        max-width: 220px;
+        padding: 12px 22px;
+        display: flex; justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+}
+
+@media (max-width: 575.98px) {
+
+  .user-details-container {
+    align-items: flex-start;
+
+    .user-details-wrapper {
+
+      .form-wrapper {
+        form {
+          .input-row {
+            .input-box {
+              width: 100%;
+
+              input {
+                width: 100%;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

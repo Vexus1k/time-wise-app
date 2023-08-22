@@ -1,0 +1,190 @@
+<div class="container p-3 p-sm-4 p-md-5">
+  <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#postModal" (click)="form.reset()">
+    <i class="ri-add-line me-2"></i><span>Dodaj wpis</span>
+  </button>
+</div>
+
+<div class="container p-3 p-sm-4 p-md-5 gap-3 d-flex flex-wrap">
+  <div class="d-flex justify-content-center align-items-center flex-wrap gap-5 w-100">
+    <div class="border border-dark p-3 w-100" style="max-width: 412px; min-height: 512px" *ngFor="let post of posts">
+      <div>
+        <div>
+          <h5>Info</h5>
+          <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="avatar-container d-flex justify-content-center align-items-center">
+              <i class="ri-user-line"></i>
+            </div>
+            <div>
+              <p class="mb-1 text-sm-nowrap">{{ post.user.firstName }} {{ post.user.lastName }}</p>
+              <p class="m-0 text-sm-nowrap">{{ post.publicationDate | date:'yyyy-MM-dd HH:mm' }}</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class=" mt-3">
+          <h5>Treść</h5>
+          <div>
+            {{ post.content }}
+          </div>
+        </div>
+
+        <div class="d-flex gap-3 mt-3 flex-wrap justify-content-center">
+          <button class="btn btn-sm btn-dark {{ post.userLiked ? 'text-danger' : '' }}" (click)="likePost(post.id)"><i class="ri-heart-line"></i> Polub {{ post.likesCount }}</button>
+          <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#commentModal" (click)="postWithCurrentlyAddingComment = post; commentForm.reset()"><i class="ri-chat-1-line"></i> Skomentuj</button>
+          <button class="btn btn-sm btn-dark" (click)="sharePost(post.id)"><i class="ri-share-line"></i> Udostępnij</button>
+        </div>
+      </div>
+      <div class="mt-3">
+        <h5>Komentarze</h5>
+        <div class="overflow-auto gap-3 d-flex flex-column" style="max-height: 179px; min-height: 179px">
+          <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap" *ngFor="let comment of post.comments">
+            <div class="avatar-container-2 d-flex align-items-center justify-content-center">
+              <i class="ri-user-line"></i>
+            </div>
+            <div>
+              {{ comment.content }}
+            </div>
+            <div>
+              <p class="mb-1 text-nowrap" style="font-size: 15px">{{ comment.user.firstName }} {{ comment.user.lastName }}</p>
+              <p class="m-0 text-nowrap" style="font-size: 14px">{{ comment.commentDate | date:'yyyy-MM-dd HH:mm' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="border border-dark p-3 w-100" style="max-width: 412px; min-height: 412px" *ngFor="let sharingPost of sharingPosts">
+      <div>
+        <h5>Info</h5>
+        <div class="d-flex justify-content-between mb-3 align-items-center flex-wrap gap-3">
+          <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="avatar-container d-flex justify-content-center align-items-center">
+              <i class="ri-user-line"></i>
+            </div>
+            <div>
+              <p class="mb-1 text-sm-nowrap">{{ sharingPost.user.firstName }} {{ sharingPost.user.lastName }}</p>
+              <p class="m-0 text-sm-nowrap">{{ sharingPost.sharingDate | date:'yyyy-MM-dd HH:mm' }}</p>
+            </div>
+          </div>
+
+          <div>
+            <button class="btn btn-sm btn-info">Udostępniony</button>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="border border-dark p-3 w-100" style="max-width: 412px; min-height: 412px">
+        <div>
+          <div>
+            <h5>Info</h5>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+              <div class="d-flex align-items-center flex-wrap gap-3">
+                <div class="avatar-container d-flex justify-content-center align-items-center">
+                  <i class="ri-user-line"></i>
+                </div>
+                <div>
+                  <p class="mb-1 text-sm-nowrap">{{ sharingPost.sharedPost.user.firstName }} {{ sharingPost.sharedPost.user.lastName }}</p>
+                  <p class="m-0 text-sm-nowrap">{{ sharingPost.sharedPost.publicationDate | date:'yyyy-MM-dd HH:mm' }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class=" mt-3">
+            <h5>Treść</h5>
+            <div>
+              {{ sharingPost.sharedPost.content }}
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 mt-3 flex-wrap justify-content-center">
+            <button class="btn btn-sm btn-dark">
+              <i class="ri-heart-line"></i> Polub {{ sharingPost.sharedPost.likesCount }}
+            </button>
+            <button class="btn btn-sm btn-dark"><i class="ri-chat-1-line"></i> Skomentuj</button>
+            <button class="btn btn-sm btn-dark"><i class="ri-share-line"></i> Udostępnij</button>
+          </div>
+
+          <div class="mt-3">
+            <h5>Komentarze</h5>
+            <div class="overflow-auto gap-3 d-flex flex-column" style="max-height: 100px; min-height: 100px">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-3" *ngFor="let comment of sharingPost.sharedPost.comments">
+                <div class="avatar-container-2 d-flex align-items-center justify-content-center">
+                  <i class="ri-user-line"></i>
+                </div>
+                <div>
+                  {{ comment.content }}
+                </div>
+                <div>
+                  <p class="mb-1 text-nowrap" style="font-size: 15px">{{ comment.user.firstName }} {{ comment.user.lastName }}</p>
+                  <p class="m-0 text-nowrap" style="font-size: 14px">{{ comment.commentDate | date:'yyyy-MM-dd HH:mm' }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="postModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="postLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="postLabel">Dodaj wpis</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="form">
+          <div class="mb-3">
+            <label for="contentInput" class="form-label">Treść</label>
+            <input
+              formControlName="content"
+              type="text"
+              class="form-control {{ isControlInvalid(form.get('content')) ? 'is-invalid' : '' }}"
+              id="contentInput"
+              aria-describedby="contentHelp"
+            >
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        <button type="button" class="btn btn-primary" (click)="addPost()">Dodaj</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="commentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="commentLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="commentLabel">Dodaj komentarz</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="commentForm">
+          <div class="mb-3">
+            <label for="contentInput" class="form-label">Treść komentarza</label>
+            <input
+              formControlName="content"
+              type="text"
+              class="form-control {{ isControlInvalid(commentForm.get('content')) ? 'is-invalid' : '' }}"
+              id="commentContentInput"
+              aria-describedby="commentContentHelp"
+            >
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        <button type="button" class="btn btn-primary" (click)="addComment()">Dodaj</button>
+      </div>
+    </div>
+  </div>
+</div>
+

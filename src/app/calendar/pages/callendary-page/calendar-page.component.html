@@ -1,0 +1,372 @@
+<div class="container p-3 p-sm-4 p-md-5">
+  <h1 class="mb-3 mb-sm-4 mb-md-5">Kalendarz</h1>
+
+  <div class="mb-3 mb-sm-4 mb-md-5 d-flex gap-3 gap-sm-4 flex-wrap">
+    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#eventModal" (click)="form.reset()">
+      <i class="ri-add-line me-2"></i><span>Dodaj wydarzenie</span>
+    </button>
+
+    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#goalModal" (click)="goalForm.reset(); isEditGoal = false">
+      <i class="ri-add-line me-2"></i><span>Dodaj Cel</span>
+    </button>
+
+    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#taskModal" (click)="taskForm.reset(); isEditTask = false">
+      <i class="ri-add-line me-2"></i><span>Dodaj Zadanie</span>
+    </button>
+  </div>
+
+  <h3 class="mb-3 mb-sm-4 mb-md-5">Wydarzenia</h3>
+
+  <div class="flex-wrap mb-3 mb-sm-4 mb-md-5 {{ calendarEvents.length > 0 ? 'd-flex' : 'd-none' }}" style="gap: 20px;">
+    <div class="card" style="width: 18rem;" *ngFor="let event of calendarEvents">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div class="d-flex flex-column gap-3">
+            <h5 class="card-title" style="margin-bottom: 0">{{ event.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary">
+              {{ event.startingDate | date:'yyyy-MM-dd HH:mm' }} -<br> {{ event.deadline | date:'yyyy-MM-dd HH:mm' }}
+            </h6>
+          </div>
+
+          <i (click)="deleteEvent(event.id)" class="ri-close-line text-danger fs-3 ms-2" role="button"></i>
+        </div>
+
+        <p class="card-text">{{ event.description }}</p>
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [checked]="event.addedNotification"
+            id="flexCheckDefault"
+            (change)="toggleNotification(event.id)"
+          >
+          <label class="form-check-label" for="flexCheckDefault">
+            Dodaj przypomnienie
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="mb-3 mb-sm-4 mb-md-5">Cele</h3>
+
+  <div class="flex-wrap mb-3 mb-sm-4 mb-md-5 {{ goals.length > 0 ? 'd-flex' : 'd-none' }}" style="gap: 20px;">
+    <div class="card" style="width: 18rem;" *ngFor="let goal of goals">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div class="d-flex flex-column gap-3">
+            <h5 class="card-title" style="margin-bottom: 0">{{ goal.content }}</h5>
+            <h6
+              class="card-subtitle text-body-secondary"
+            >
+              {{ goal.createdDate | date:'yyyy-MM-dd HH:mm' }} -<br> {{ goal.deadline | date:'yyyy-MM-dd HH:mm' }}
+            </h6>
+          </div>
+
+          <div class="ms-2 d-flex flex-column">
+            <i (click)="deleteGoal(goal.id)" class="ri-close-line text-danger fs-3 ms-2" role="button"></i>
+            <i
+              (click)="goalForm.patchValue(goal); isEditGoal = true; editingGoal = goal"
+              class="ri-pencil-line text-dark fs-3 ms-2"
+              role="button"
+              data-bs-toggle="modal"
+              data-bs-target="#goalModal"
+            ></i>
+          </div>
+        </div>
+
+        <div class="mb-3 d-flex flex-column overflow-auto mt-3" style="gap: 12px; max-height: 200px; min-height: 200px">
+          <div class="d-flex justify-content-between align-items-center border p-3" *ngFor="let progress of goal.progressList">
+            <div class="d-flex flex-column">
+              <p class="m-0">{{ progress.date | date:'yyyy-MM-dd HH:mm' }}</p>
+              <p class="m-0">{{ progress.description }}</p>
+            </div>
+
+            <i (click)="deleteProgress(goal.id, progress.id)" class="ri-close-line text-danger fs-4 ms-2" role="button"></i>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center">
+          <button
+            type="button"
+            class="btn btn-dark"
+            data-bs-target="#progressModal"
+            data-bs-toggle="modal"
+            (click)="progressForm.reset(); pickedGoalIdToAddProgress = goal.id"
+          >
+            <i class="ri-add-line"></i>
+          </button>
+        </div>
+
+        <div>
+          <label for="statusGoal">Status:</label>
+          <select id="statusGoal" class="form-select" aria-label="Select Priority" disabled>
+            <option>{{ goalStatusEnum[goal.status] }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="mb-3 mb-sm-4 mb-md-5">Zadania</h3>
+
+  <div class="flex-wrap mb-3 mb-sm-4 mb-md-5 {{ tasks.length > 0 ? 'd-flex' : 'd-none' }}" style="gap: 20px;">
+    <div class="card" style="width: 18rem;" *ngFor="let task of tasks">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div class="d-flex flex-column gap-3">
+            <h5 class="card-title" style="margin-bottom: 0">{{ task.content }}</h5>
+            <h6 class="card-subtitle text-body-secondary">{{ task.createdDate | date:'yyyy-MM-dd HH:mm' }}</h6>
+          </div>
+
+          <div class="ms-2 d-flex flex-column">
+            <i (click)="deleteTask(task.id)" class="ri-close-line text-danger fs-3 ms-2" role="button"></i>
+            <i
+              (click)="taskForm.patchValue(task); isEditTask = true; editingTask = task"
+              class="ri-pencil-line text-dark fs-3 ms-2"
+              role="button"
+              data-bs-toggle="modal"
+              data-bs-target="#taskModal"
+            ></i>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="priorityTask">Priorytet:</label>
+          <select id="priorityTask" class="form-select" aria-label="Select Priority" disabled>
+            <option>{{ taskPriorityEnum[task.priority] }}</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="statusTask">Status:</label>
+          <select id="statusTask" class="form-select" aria-label="Select Status" disabled>
+            <option>{{ taskStatusEnum[task.status] }}</option>
+          </select>
+        </div>
+
+        <p>Tagi i kategorie:</p>
+        <div class="d-flex flex-wrap" style="gap: 12px;">
+          <button type="button" class="btn btn-outline-info" *ngFor="let tag of task.relatedTagsOrCategories">{{ tag }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="eventModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="eventLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="eventLabel">Zapisz wydarzenie</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="form">
+          <div class="mb-3">
+            <label for="titleInput" class="form-label">Tytuł</label>
+            <input
+              formControlName="title"
+              type="text"
+              class="form-control {{ isControlInvalid(form.get('title')) ? 'is-invalid' : '' }}"
+              id="titleInput"
+              aria-describedby="titleHelp"
+            >
+          </div>
+          <div class="mb-3">
+            <label for="startDateInput" class="form-label">Data rozpoczęcia</label>
+            <input
+              formControlName="startingDate"
+              type="datetime-local"
+              class="form-control {{ isControlInvalid(form.get('startingDate')) ? 'is-invalid' : '' }}"
+              id="startDateInput"
+              aria-describedby="startDateHelp"
+            >
+          </div>
+          <div class="mb-3">
+            <label for="deadlineInput" class="form-label">Data zakończenia</label>
+            <input
+              formControlName="deadline"
+              type="datetime-local"
+              class="form-control {{ isControlInvalid(form.get('deadline')) ? 'is-invalid' : '' }}"
+              id="deadlineInput"
+              aria-describedby="deadlineHelp"
+            >
+          </div>
+          <div class="mb-3">
+            <label for="descriptionTextarea" class="form-label">Opis</label>
+            <textarea
+              formControlName="description"
+              class="form-control {{ isControlInvalid(form.get('description')) ? 'is-invalid' : '' }}"
+              id="descriptionTextarea"
+              aria-describedby="descriptionHelp"
+            >
+            </textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        <button type="button" class="btn btn-primary" (click)="addEvent()">Dodaj</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="goalModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="taskLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="goalLabel">{{ isEditTask ? 'Zapisz cel' : 'Dodaj cel' }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="goalForm">
+          <div class="mb-3">
+            <label for="contentGoalInput" class="form-label">Treść</label>
+            <input
+              formControlName="content"
+              type="text"
+              class="form-control {{ isControlInvalid(goalForm.get('content')) ? 'is-invalid' : '' }}"
+              id="contentGoalInput"
+              aria-describedby="contentGoalHelp"
+            >
+          </div>
+          <div class="mb-3">
+            <label for="goalCreatedDateInput" class="form-label">Data rozpoczęcia</label>
+            <input
+              formControlName="createdDate"
+              type="datetime-local"
+              class="form-control {{ isControlInvalid(goalForm.get('createdDate')) ? 'is-invalid' : '' }}"
+              id="goalCreatedDateInput"
+              aria-describedby="goalCreatedDateHelp"
+            >
+          </div>
+          <div class="mb-3">
+            <label for="goalDeadlineInput" class="form-label">Data zakończenia</label>
+            <input
+              formControlName="deadline"
+              type="datetime-local"
+              class="form-control {{ isControlInvalid(goalForm.get('deadline')) ? 'is-invalid' : '' }}"
+              id="goalDeadlineInput"
+              aria-describedby="goalDeadlineHelp"
+            >
+          </div>
+          <div class="mb-3">
+            <label for="goalPriority">Status:</label>
+            <select id="goalPriority" formControlName="status" class="form-select {{ isControlInvalid(goalForm.get('status')) ? 'is-invalid' : '' }}" aria-label="Select Priority">
+              <option selected disabled>Wybierz opcje</option>
+              <option *ngFor="let status of goalStatusEnum | keyvalue" [value]="status.key">{{ status.value }}</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        <button type="button" class="btn btn-primary" (click)="isEditGoal ? editGoal() : addGoal()">{{ isEditGoal ? 'Zapisz' : 'Dodaj' }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="progressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="taskLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="progressLabel">Dodaj progres</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="progressForm">
+          <div class="mb-3">
+            <label for="progressDateInput" class="form-label">Data</label>
+            <input
+              formControlName="date"
+              type="datetime-local"
+              class="form-control {{ isControlInvalid(progressForm.get('date')) ? 'is-invalid' : '' }}"
+              id="progressDateInput"
+              aria-describedby="goalCreatedDateHelp"
+            >
+          </div>
+          <div class="mb-3">
+            <label for="progressDateInput" class="form-label">Opis</label>
+            <input
+              formControlName="description"
+              type="text"
+              class="form-control {{ isControlInvalid(progressForm.get('description')) ? 'is-invalid' : '' }}"
+              id="descriptionInput"
+              aria-describedby="descriptionHelp"
+            >
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        <button type="button" class="btn btn-primary" (click)="addProgress()">Dodaj</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="taskModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="taskLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="taskLabel">{{ isEditTask ? 'Zapisz zadanie' : 'Dodaj zadanie' }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="taskForm">
+          <div class="mb-3">
+            <label for="contentInput" class="form-label">Treść</label>
+            <input
+              formControlName="content"
+              type="text"
+              class="form-control {{ isControlInvalid(taskForm.get('content')) ? 'is-invalid' : '' }}"
+              id="contentInput"
+              aria-describedby="contentHelp"
+            >
+          </div>
+          <div class="mb-3">
+            <label for="createdDateInput" class="form-label">Data rozpoczęcia</label>
+            <input
+              formControlName="createdDate"
+              type="datetime-local"
+              class="form-control {{ isControlInvalid(taskForm.get('createdDate')) ? 'is-invalid' : '' }}"
+              id="createdDateInput"
+              aria-describedby="createdDateHelp"
+            >
+          </div>
+          <div class="mb-3">
+            <label for="priority">Priorytet:</label>
+            <select id="priority" formControlName="priority" class="form-select {{ isControlInvalid(taskForm.get('priority')) ? 'is-invalid' : '' }}" aria-label="Select Priority">
+              <option selected disabled>Wybierz opcje</option>
+              <option *ngFor="let priority of taskPriorityEnum | keyvalue" [value]="priority.key">{{ priority.value }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="status">Status:</label>
+            <select id="status" formControlName="status" class="form-select {{ isControlInvalid(taskForm.get('status')) ? 'is-invalid' : '' }}" aria-label="Select Status">
+              <option selected disabled>Wybierz opcje</option>
+              <option *ngFor="let status of taskStatusEnum | keyvalue" [value]="status.key">{{ status.value }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="relatedTagsOrCategoriesInput" class="form-label">Powiązane tagi i kategorie</label>
+            <input
+              formControlName="relatedTagsOrCategories"
+              type="text"
+              placeholder="Wpisz po przecinku"
+              class="form-control {{ isControlInvalid(taskForm.get('relatedTagsOrCategories')) ? 'is-invalid' : '' }}"
+              id="relatedTagsOrCategoriesInput"
+              aria-describedby="createdDateHelp"
+            >
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        <button type="button" class="btn btn-primary" (click)="isEditTask ? editTask() : addTask()">{{ isEditTask ? 'Zapisz' : 'Dodaj' }}</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<div class="form-container d-flex justify-content-center align-items-center position-relative">
+  <div class="form-structor position-relative overflow-hidden">
+    <div class="signup position-absolute" [ngClass]="{ 'slide-up': !isSignupActive }">
+      <h2 class="form-title text-white text-center fw-bold" id="signup" (click)="toggleSlide('signup')"><span>or</span>Sign up</h2>
+      <form [formGroup]="registerForm" (ngSubmit)="submitForm()">
+        <div class="form-holder overflow-hidden bg-white opacity-100">
+          <input type="text" class="input {{ isControlInvalid(registerForm.get('firstName')) ? 'is-invalid' : '' }}" placeholder="Name" formControlName="firstName" />
+          <input type="text" class="input {{ isControlInvalid(registerForm.get('lastName')) ? 'is-invalid' : '' }}" placeholder="Surname" formControlName="lastName" />
+          <input type="email" class="input {{ isControlInvalid(registerForm.get('email')) ? 'is-invalid' : '' }}" placeholder="Email" formControlName="email" />
+          <input type="password" class="input {{ isControlInvalid(registerForm.get('password')) ? 'is-invalid' : '' }}" placeholder="Password" formControlName="password" />
+        </div>
+        <button [class.loading]="isLoading" type="submit" class="submit-btn d-block w-100 border-0 fw-bold opacity-100">Sign up</button>
+      </form>
+    </div>
+    <div class="login position-absolute bg-white" [ngClass]="{ 'slide-up': isSignupActive }">
+      <div class="center position-absolute">
+        <h2 class="form-title text-center fw-bold" id="login" (click)="toggleSlide('login')"><span>or</span>Log in</h2>
+        <form [formGroup]="loginForm" (ngSubmit)="submitForm()">
+          <div class="form-holder overflow-hidden bg-white opacity-100">
+            <input type="email" class="input {{ isControlInvalid(loginForm.get('email')) ? 'is-invalid' : '' }}" placeholder="Email" formControlName="email" />
+            <input type="password" class="input {{ isControlInvalid(loginForm.get('password')) ? 'is-invalid' : '' }}" placeholder="Password" formControlName="password" />
+          </div>
+          <button [class.loading]="isLoading" type="submit" class="submit-btn fw-bold w-100 d-block border-0 opacity-100">Log in</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,84 @@
+<nav
+  class="sidebar position-fixed d-flex flex-column top-0 start-0 vh-100 overflow-hidden"
+  tabindex="0"
+  [class.dark-mode]="isDarkMode"
+  [class.responsive-sidebar]="isSidebarResponsive"
+>
+  <header class="title-wrapper d-flex align-items-center">
+    <img src="https://cdn-icons-png.flaticon.com/512/3310/3310200.png" alt="">
+    <h5 class="fw-bolder m-0">Time Wise</h5>
+  </header>
+  <div class="search-wrapper position-relative">
+    <input type="text" class="border-0 w-100" placeholder="Search..." [(ngModel)]="searchTerm" (input)="onSearchInputChange()">
+    <i class="ri-search-line position-absolute top-50" (click)="isSidebarResponsive ? toggleResponsiveSidebar() : ''"></i>
+  </div>
+  <div class="menu-wrapper">
+    <p class="title">Menu</p>
+    <ul class="d-flex p-0 m-0 flex-column list-unstyled">
+      <li
+        (click)="!isSidebarResponsive && isScreenToResponsive ? toggleResponsiveSidebar(true) : ''"
+        tabindex="0"
+        class="d-flex align-items-center"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        *ngFor="let item of filteredMenuItems"
+      >
+        <i class="{{ item.iconClass }}"></i><span>{{ item.name }}</span>
+      </li>
+    </ul>
+  </div>
+  <div class="switch-user-wrapper mt-auto d-flex flex-column">
+    <div
+      class="arrow d-flex justify-content-center align-items-center"
+    >
+      <i role="button" (click)="toggleResponsiveSidebar()" class="ri-arrow-right-line"></i>
+    </div>
+
+    <div class="switch-mode-wrapper d-flex">
+      <button
+        class="fw-bold w-50 border-0 d-flex align-items-center justify-content-center"
+        [class.active]="!isDarkMode"
+        [class.bg-transparent]="isDarkMode"
+        (click)="toggleDarkMode(false)"
+      >
+        <i class="ri-sun-line fw-normal"></i><span>Light</span>
+      </button>
+      <button
+        class="fw-bold w-50 border-0 d-flex align-items-center justify-content-center"
+        [class.active]="isDarkMode"
+        [class.bg-transparent]="!isDarkMode"
+        (click)="toggleDarkMode(true)"
+      >
+        <i class="ri-moon-line fw-normal"></i><span>Dark</span>
+      </button>
+    </div>
+
+    <div class="user-info-wrapper d-flex align-items-center">
+      <div class="avatar-container d-flex justify-content-center align-items-center">
+        <i class="ri-user-line"></i>
+      </div>
+      <div class="details-wrapper w-100">
+        <p class="fw-bold">
+          {{
+            (identity.user.firstName + ' ' + identity.user.lastName).length > 17 ?
+            (identity.user.firstName + ' ' + identity.user.lastName).slice(0, 17) + '...' :
+            (identity.user.firstName + ' ' + identity.user.lastName)
+          }}
+        </p>
+        <p>{{
+            identity.user.email.length > 17 ?
+            identity.user.email.slice(0, 17) + '...' :
+            identity.user.email
+          }}</p>
+      </div>
+      <i role="button" class="ri-logout-box-line" (click)="logout()"></i>
+    </div>
+  </div>
+</nav>
+
+<div
+  class="router-content"
+  [class.responsive]="isScreenToResponsive"
+>
+  <router-outlet></router-outlet>
+</div>

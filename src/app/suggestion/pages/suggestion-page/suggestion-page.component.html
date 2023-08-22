@@ -1,0 +1,75 @@
+<div class="container p-3 p-sm-4 p-md-5">
+  <h1 class="mb-3 mb-sm-4 mb-md-5">Sugestie</h1>
+
+  <div class="mb-3 mb-sm-4 mb-md-5 d-flex gap-3 gap-sm-4 flex-wrap align-items-center">
+    <div>
+      <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#suggestionModal">
+        <i class="ri-add-line me-2"></i><span>Dodaj notatke</span>
+      </button>
+    </div>
+
+    <div class="mb-4">
+      <label for="category">Kategoria:</label>
+      <select id="category" class="form-select" aria-label="Select Category" [(ngModel)]="selectedCategory" (change)="onChangeCategory(selectedCategory)">
+        <option value="all">Wybierz opcje</option>
+        <option *ngFor="let status of suggestionCategoryEnum | keyvalue" [value]="status.key">{{ status.value }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="mb-3 mb-sm-4 mb-md-5">
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Treść</th>
+        <th scope="col">Kategoria</th>
+      </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let suggestion of suggestions">
+          <th scope="row">{{ suggestion.id }}</th>
+          <td>{{ suggestion.content }}</td>
+          <td>{{ suggestionCategoryEnum[suggestion.suggestionCategory] }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="suggestionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="suggestionLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="suggestionLabel">Dodaj wpis</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="form">
+          <div class="mb-3">
+            <label for="contentInput" class="form-label">Treść</label>
+            <input
+              formControlName="content"
+              type="text"
+              class="form-control {{ isControlInvalid(form.get('content')) ? 'is-invalid' : '' }}"
+              id="contentInput"
+              aria-describedby="contentHelp"
+            >
+          </div>
+          <div>
+            <label for="categoryForm">Kategoria:</label>
+            <select id="categoryForm" class="form-select {{ isControlInvalid(form.get('content')) ? 'is-invalid' : '' }}" aria-label="Select Category" formControlName="suggestionCategory">
+              <option selected disabled>Wybierz opcje</option>
+              <option *ngFor="let status of suggestionCategoryEnum | keyvalue" [value]="status.key">{{ status.value }}</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        <button type="button" class="btn btn-primary" (click)="addSuggestion()">Dodaj</button>
+      </div>
+    </div>
+  </div>
+</div>
+
