@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { IdentityService } from "../../../auth/core/services/IdentityService";
 import { Router } from "@angular/router";
 import { AuthService } from "../../../auth/core/services/AuthService";
 import { NotificationService } from "../../../core/services/NotificationService";
 import { IAuthenticationResponse } from "../../../auth/core/interfaces/IAuthenticationResponse";
+import { DarkModeService } from "../../../core/services/DarkModeService";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: 'app-base-auth-layout',
@@ -11,10 +13,11 @@ import { IAuthenticationResponse } from "../../../auth/core/interfaces/IAuthenti
   styleUrls: ['./base-layout.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BaseLayoutComponent implements OnInit {
+export class BaseLayoutComponent implements OnInit, OnDestroy {
   public isDarkMode = false;
   public isScreenToResponsive: boolean;
   public isSidebarResponsive: boolean;
+  public darkModeSubscription: Subscription;
   public searchTerm = '';
   public readonly menuItems = [
     {
@@ -43,33 +46,22 @@ export class BaseLayoutComponent implements OnInit {
       iconClass: 'ri-file-text-line'
     }
   ];
-  public readonly supportMenuItems = [
-    {
-      name: 'Ustawienia',
-      path: '',
-      iconClass: 'ri-settings-5-line'
-    },
-    {
-      name: 'Zgłoś',
-      path: '',
-      iconClass: 'ri-flag-line'
-    },
-    {
-      name: 'Wsparcie',
-      path: '',
-      iconClass: 'ri-error-warning-line'
-    }
-  ];
+
   public filteredMenuItems = this.menuItems;
 
   constructor(
     private readonly _identityService: IdentityService,
     private readonly _router: Router,
     private readonly _authService: AuthService,
-    private readonly _notificationService: NotificationService
+    private readonly _notificationService: NotificationService,
+    private readonly _darkModeService: DarkModeService
   ) {}
 
   public ngOnInit(): void {
+    this.darkModeSubscription = this._darkModeService.isDarkMode$.subscribe(isDarkMode => {
+      this.isDarkMode = isDarkMode;
+    });
+
     this.checkScreenSize();
   }
 
@@ -78,7 +70,6 @@ export class BaseLayoutComponent implements OnInit {
   }
 
   public logout(): void {
-    this._identityService.destroyIdentity();
     this._authService.logout(this._identityService.identity.access_token).subscribe(
       response => {
         this._identityService.destroyIdentity();
@@ -92,7 +83,7 @@ export class BaseLayoutComponent implements OnInit {
   }
 
   public toggleDarkMode(state: boolean): void {
-    this.isDarkMode = state;
+    this._darkModeService.toggleDarkMode(state);
   }
 
   public toggleResponsiveSidebar(force = false): void {
@@ -101,10 +92,6 @@ export class BaseLayoutComponent implements OnInit {
 
   public onSearchInputChange(): void {
     this.filterMenuItems(this.searchTerm);
-  }
-
-  public getNotificationTODO(): void {
-    this._notificationService.pushInfo("Pracujemy nad zrobieniem tej zakładki. Proszę wrócić później.");
   }
 
   private filterMenuItems(searchTerm: string): void {
@@ -125,5 +112,11 @@ export class BaseLayoutComponent implements OnInit {
   @HostListener('window:resize', ['$event'])
   public onResize(): void {
     this.checkScreenSize();
+  }
+
+  public ngOnDestroy(): void {
+    if (this.darkModeSubscription) {
+      this.darkModeSubscription.unsubscribe();
+    }
   }
 }

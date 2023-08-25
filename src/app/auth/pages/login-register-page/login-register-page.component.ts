@@ -73,7 +73,7 @@ export class LoginRegisterPageComponent extends AbstractFormManager {
           response => {
             if (response.user.activated) {
               this._identityService.identity = response;
-              this._router.navigateByUrl('/user-info/profile');
+              this._router.navigateByUrl('/dashboard');
               this._notificationService.pushSuccess('Logowanie udane!');
               this._calendarService.getEventsWithNotifications().subscribe((res) => {
                 res.forEach((el) => {

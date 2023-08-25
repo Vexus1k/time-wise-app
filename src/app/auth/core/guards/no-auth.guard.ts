@@ -20,7 +20,7 @@ export class NoAuthGuard implements CanActivate {
     if (!this._identityService.isAuthenticated || state.url.includes('auth/logout')) {
       return true;
     } else {
-      this._router.navigateByUrl('/user-info');
+      this._router.navigateByUrl('/dashboard');
       return false;
     }
   }

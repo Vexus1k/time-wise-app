@@ -217,6 +217,12 @@ $menu-width-smartphone: 80px;
     }
   }
 
+  &.dark-mode {
+    .search-wrapper:hover {
+      background-color: #293751;
+    }
+  }
+
   .search-wrapper {
     display: flex;
     align-items: center;
@@ -227,7 +233,7 @@ $menu-width-smartphone: 80px;
     border-radius: 12px;
 
     &:hover {
-      background-color: #293751;
+      background-color: rgba(245, 246, 246);
     }
 
     input {
